@@ -6,6 +6,7 @@ package com.pantrypal;
 
 /**
  *
+ * @author Terrace1
  * @author aliah
  */
 public class PantryPal {
