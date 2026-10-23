@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+    
+<hibernate-configuration>
+    <session-factory>
+        <!-- ===== JDBC connection ===== --> 
+        <property 
+        name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property 
+        name="hibernate.connection.url">jdbc:mysql://localhost:3306/pantrypal_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">" "</property>
+       
+        <!-- Small built-in pool: fine for learning, use HikariCP in production --> 
+        <property name="hibernate.connection.pool_size">5</property>
+        
+        <!-- ===== Hibernate behaviour ===== --> 
+        <!-- Hibernate 6 auto-detects MySQL, but being explicit is good practice. 
+             (MySQL8Dialect / MySQL57Dialect no longer exist: use MySQLDialect.) --> 
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property> 
+        <property name="hibernate.hbm2ddl.auto">none</property>
+        
+        <!-- Print the SQL Hibernate generates (useful when learning) -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        
+        <!-- Every entity class must be registered here -->
+        <mapping class="com.pantrypal.model.User"/>
+        <mapping class="com.pantrypal.model.Category"/>
+        <mapping class="com.pantrypal.model.Ingredient"/>
+        <mapping class="com.pantrypal.model.Receipt"/>
+        <mapping class="com.pantrypal.model.PantryItem"/>
+        
+    </session-factory>
+</hibernate-configuration>
+
