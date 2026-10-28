@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status="WARN": Log4j reports problems in ITS OWN configuration at WARN
+and above -->
+<Configuration status="WARN" name="PantryPalLogging">
+    <Properties>
+        <!-- Layout 1: short, for reading in the NetBeans Output window -->
+        <Property name="CONSOLE_PATTERN">%d{HH:mm:ss.SSS} %-5level %c{1} -
+            %msg%n</Property>
+        <!-- Layout 2: detailed, for the log file (date, thread, class, line
+        number) -->
+        <Property name="FILE_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5level
+            | %-10t | %c{2}:%L | %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <!-- Appender 1: Console -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${CONSOLE_PATTERN}"/>
+        </Console>
+        <!-- Appender 2: File (created in the project folder,
+        logs/pantrypal.log) -->
+        <File name="File" fileName="logs/pantrypal.log" append="true">
+            <PatternLayout pattern="${FILE_PATTERN}"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <!-- Our own code: everything from DEBUG up goes to the file, INFO
+        and up to the console.
+        additivity="false" stops the root logger printing every line a
+        second time. -->
+        <Logger name="com.pantrypal" level="debug" additivity="false">
+            <AppenderRef ref="Console" level="info"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+        <!-- Hibernate is chatty: keep only its warnings and errors -->
+        <Logger name="org.hibernate" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+        <!-- Everything else -->
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>
