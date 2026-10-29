@@ -10,8 +10,8 @@
         name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property 
         name="hibernate.connection.url">jdbc:mysql://localhost:3306/pantrypal_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">" "</property>
+<property name="hibernate.connection.username">root</property>
+<property name="hibernate.connection.password"></property>
        
         <!-- Small built-in pool: fine for learning, use HikariCP in production --> 
         <property name="hibernate.connection.pool_size">5</property>

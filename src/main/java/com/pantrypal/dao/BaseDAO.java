@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+
 public abstract class BaseDAO {
 
     protected final Logger log = LogManager.getLogger(getClass());
