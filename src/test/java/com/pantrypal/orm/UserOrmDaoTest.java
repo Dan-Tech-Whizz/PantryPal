@@ -14,25 +14,30 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/** CRUD tests for the Hibernate (ORM) UserDAO. */
+/* CRUD tests for the Hibernate (ORM) UserDAO.*/
 @ExtendWith(TestLogger.class)
 class UserOrmDaoTest {
-private final UserDAO dao = new UserDAO();
-private final List<Integer> created = new ArrayList<>();
-private static User newUser() {
-        return new User("ORM Tester", "orm" + System.nanoTime() + 
-"@test.local", "hash");
+
+    private final UserDAO dao = new UserDAO();
+    private final List<Integer> created = new ArrayList<>();
+
+    private static User newUser() {
+        return new User("ORM Tester", "orm" + System.nanoTime()
+                + "@test.local", "hash");
     }
+
     private Integer save(User user) {
         Integer id = dao.createUser(user);
         created.add(id);                    // remembered so @AfterEach can delete it
         return id;
     }
+
     @AfterEach
     void cleanUp() {
         created.forEach(dao::deleteUser);
         created.clear();
     }
+
     // ---------- CREATE ----------
     @Test
     void createUser_assignsAGeneratedId() {
@@ -43,22 +48,21 @@ private static User newUser() {
             assertTrue(log.has(Level.INFO, "User created"));
         }
     }
+
     @Test
     void createUser_duplicateEmail_throwsAndLogsAnError() {
         User first = newUser();
         save(first);
         User duplicate = new User("Duplicate", first.getEmail(), "hash");
         try (LogCapture log = new LogCapture()) {
-            DataAccessException ex = assertThrows(DataAccessException.class, 
-() -> dao.createUser(duplicate));
-            assertNotNull(ex.getCause(), "the original Hibernate exception is 
-kept as the cause");
-            assertTrue(log.has(Level.ERROR), "a failed insert must be logged 
-at ERROR");
-            assertNotNull(log.last(Level.ERROR).orElseThrow().getThrown(), 
-"with the stack trace");
+            DataAccessException ex = assertThrows(DataAccessException.class,
+                    () -> dao.createUser(duplicate));
+            assertNotNull(ex.getCause(), "the original Hibernate exception is kept as the cause");
+            assertTrue(log.has(Level.ERROR), "a failed insert must be logged at ERROR");
+            assertNotNull(log.last(Level.ERROR).orElseThrow().getThrown(), "with the stack trace");
         }
     }
+
     // ---------- READ ----------
     @Test
     void findById_returnsTheSavedUser() {
@@ -70,6 +74,7 @@ at ERROR");
         assertTrue(found.get().getNotificationsEnabled());
         assertTrue(found.get().getPantryItems().isEmpty());
     }
+
     @Test
     void findById_unknownId_isEmptyAndLogsAWarning() {
         try (LogCapture log = new LogCapture()) {
@@ -77,19 +82,22 @@ at ERROR");
             assertTrue(log.has(Level.WARN, "No user found"));
         }
     }
+
     @Test
     void findByEmail_findsTheUser() {
         User user = newUser();
         Integer id = save(user);
-        assertEquals(id, 
-dao.findByEmail(user.getEmail()).orElseThrow().getId());
+        assertEquals(id,
+                dao.findByEmail(user.getEmail()).orElseThrow().getId());
     }
+
     @Test
     void findAll_containsTheSavedUser() {
         Integer id = save(newUser());
-        assertTrue(dao.findAll().stream().anyMatch(u -> 
-id.equals(u.getId())));
+        assertTrue(dao.findAll().stream().anyMatch(u
+                -> id.equals(u.getId())));
     }
+
     // ---------- UPDATE ----------
     @Test
     void updateSettings_changesBothFlags() {
@@ -102,28 +110,30 @@ id.equals(u.getId())));
             assertTrue(log.has(Level.INFO, "Settings updated"));
         }
     }
+
     @Test
     void updateSettings_unknownUser_throwsAndLogsAWarning() {
         try (LogCapture log = new LogCapture()) {
-            assertThrows(DataAccessException.class, () -> 
-dao.updateSettings(-1, true, true));
+            assertThrows(DataAccessException.class, ()
+                    -> dao.updateSettings(-1, true, true));
             assertTrue(log.has(Level.WARN));
         }
     }
+
     // ---------- DELETE ----------
     @Test
     void deleteUser_removesTheRow() {
         Integer id = save(newUser());
         assertTrue(dao.deleteUser(id));
-        created.remove(id);                 // already gone, nothing for 
-@AfterEach to do
+        created.remove(id);                 // already gone, nothing for @AfterEach to do
         assertTrue(dao.findById(id).isEmpty());
     }
+
     @Test
     void deleteUser_unknownId_returnsFalseAndLogsAWarning() {
         try (LogCapture log = new LogCapture()) {
             assertFalse(dao.deleteUser(-1));
-assertTrue(log.has(Level.WARN, "Delete skipped"));
-}
-}
+            assertTrue(log.has(Level.WARN, "Delete skipped"));
+        }
+    }
 }

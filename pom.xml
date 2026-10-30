@@ -9,7 +9,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
       <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <exec.mainClass>com.pantrypal.ConsoleDemo</exec.mainClass>
         <log4j.version>2.24.3</log4j.version>

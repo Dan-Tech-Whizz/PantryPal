@@ -1,4 +1,5 @@
 package com.pantrypal.support;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Property;
+
 /** Records log events in memory so a unit test can assert on them. */
 public final class LogCapture implements AutoCloseable {
 private final List<LogEvent> events = new CopyOnWriteArrayList<>();
@@ -21,8 +23,7 @@ null, null, true, Property.EMPTY_ARRAY) {
 @Override
 public void append(LogEvent event) {
 events.add(event.toImmutable());    
-// copy: Log4j reuses 
-event objects
+// copy: Log4j reuses event objects
 }
   };
         appender.start();
