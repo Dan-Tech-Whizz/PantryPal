@@ -3,8 +3,10 @@ package com.pantrypal.dao;
 import com.pantrypal.model.User;
 import java.util.List;
 import java.util.Optional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class UserDAO extends BaseDAO {
+    private static final Logger log =LoggerFactory.getLogger(UserDAO.class);
 
     // ---------- CREATE ----------
     public Integer createUser(User user) {
@@ -100,9 +102,9 @@ public class UserDAO extends BaseDAO {
         });
 
         if (deleted) {
-            log.info("User deleted: id={}", userId);
+      //      log.info("User deleted: id={}", userId);
         } else {
-            log.warn("Delete skipped: no user with id={}", userId);
+     //       log.warn("Delete skipped: no user with id={}", userId);
         }
 
         return deleted;
