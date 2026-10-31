@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Level;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 /** CRUD tests for the traditional (JDBC) UserJdbcDAO. */
 @ExtendWith(TestLogger.class)
 class UserJdbcDaoTest {

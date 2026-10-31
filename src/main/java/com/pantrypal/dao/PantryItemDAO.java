@@ -4,111 +4,117 @@ import com.pantrypal.model.Ingredient;
 import com.pantrypal.model.ItemStatus;
 import com.pantrypal.model.PantryItem;
 import com.pantrypal.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 
 public class PantryItemDAO extends BaseDAO {
-    // =====================================================================
-    // CREATE
-    // =====================================================================
-    /**
-     * Adds an item to a user's pantry. If no expiry date was given, it is worked out
-     * as purchase date + the category's shelf life (Dairy 7 days, Meat 3 days ...).
-     *
-     * @return the new item_id
-     */
-    
+    private static final Logger LOG = LoggerFactory.getLogger(PantryItemDAO.class);
+
+    // ---------- CREATE ----------
     public Integer addItem(Integer userId, Integer ingredientId, PantryItem item) {
         return executeInTransaction(session -> {
+            // Validate user exists
             User user = session.get(User.class, userId);
             if (user == null) {
+                LOG.warn("addItem failed: no user with id {}", userId);
                 throw new DataAccessException("No user with id " + userId);
             }
+            // Validate ingredient exists
             Ingredient ingredient = session.get(Ingredient.class, ingredientId);
             if (ingredient == null) {
+                LOG.warn("addItem failed: no ingredient with id {}", ingredientId);
                 throw new DataAccessException("No ingredient with id " + ingredientId);
             }
 
-            item.setUser(user);                 
+            // Keep both sides in sync - set relationships
+            item.setUser(user);
             item.setIngredient(ingredient);
+
+            // If expiry is null, work it out from the category shelf life
+            // Use purchaseDate + shelfLifeDays, not LocalDate.now()
             if (item.getExpiryDate() == null) {
-                int days = ingredient.getCategory().getShelfLifeDays();  
-                item.setExpiryDate(item.getPurchaseDate().plusDays(days));
+                LocalDate base = item.getPurchaseDate() != null ? item.getPurchaseDate() : LocalDate.now();
+                int days = ingredient.getCategory().getShelfLifeDays();
+                item.setExpiryDate(base.plusDays(days));
             }
-            session.persist(item);              
+
+            // INSERT PantryItem
+            session.persist(item);
+            LOG.info("Pantry item added: id={}, user={}", item.getId(), userId);
             return item.getId();
         });
     }
-    
-    // =====================================================================
-    // READ
-    // =====================================================================
-    /**
-     * All items of one user, soonest expiry first. "join fetch" loads the ingredient
-     * and its category in the SAME query, so they are safe to use after the Session closes.
-     */
-    
+
+    // ---------- READ ----------
     public List<PantryItem> findByUser(Integer userId) {
-        return executeInTransaction(session -> session.createQuery(
-                "select p from PantryItem p "
-              + "join fetch p.ingredient i join fetch i.category "
-              + "where p.user.id = :uid order by p.expiryDate", PantryItem.class)
+        // join fetch to avoid lazy loading issues, order by expiry
+        return executeInTransaction(session ->
+            session.createQuery(
+                "from PantryItem p join fetch p.ingredient join fetch p.ingredient.category where p.user.id = :uid order by p.expiryDate",
+                PantryItem.class)
                 .setParameter("uid", userId)
-                .getResultList());
+                .getResultList()
+        );
     }
-    /** ACTIVE items that expire on or before the cutoff date (drives the 
-    red/amber cards). */
-    public List<PantryItem> findExpiringBy(Integer userId, LocalDate cutoff) 
-    {
-        return executeInTransaction(session -> session.createQuery(
-                "select p from PantryItem p "
-              + "join fetch p.ingredient i join fetch i.category "
-              + "where p.user.id = :uid and p.status = :st and p.expiryDate <= :cutoff "
-              + "order by p.expiryDate", PantryItem.class)
+
+    public List<PantryItem> findExpiringBy(Integer userId, LocalDate date) {
+        // Only ACTIVE items expiring on or before cutoff - consumed items are no longer expiring
+        return executeInTransaction(session ->
+            session.createQuery(
+                "from PantryItem p join fetch p.ingredient join fetch p.ingredient.category where p.user.id = :uid and p.expiryDate <= :date and p.status = :active order by p.expiryDate",
+                PantryItem.class)
                 .setParameter("uid", userId)
-                .setParameter("st", ItemStatus.ACTIVE)
-                .setParameter("cutoff", cutoff)
-                .getResultList());
+                .setParameter("date", date)
+                .setParameter("active", ItemStatus.ACTIVE)
+                .getResultList()
+        );
     }
-    
-    // =====================================================================
-    // UPDATE
-    // =====================================================================
+
+    // ---------- UPDATE ----------
     public void updateQuantity(Integer itemId, int quantity) {
-        runInTransaction(session -> {
+        executeInTransaction(session -> {
             PantryItem item = requireItem(session, itemId);
+            // Prevent negative quantity
             item.setQuantity(Math.max(0, quantity));
+            LOG.info("Quantity updated for item id={} to {}", itemId, item.getQuantity());
+            return null;
         });
     }
-    
-    /** Marks an item CONSUMED, EXPIRED or DISCARDED and stamps status_date 
-    with today. */
+
     public void markStatus(Integer itemId, ItemStatus status) {
-        runInTransaction(session -> {
+        executeInTransaction(session -> {
             PantryItem item = requireItem(session, itemId);
+            // Hibernate detects changes and issues UPDATE, set statusDate to now
             item.setStatus(status);
             item.setStatusDate(LocalDate.now());
+            LOG.info("Status updated for item id={} to {}", itemId, status);
+            return null;
         });
     }
-    
-    // =====================================================================
-    // DELETE
-    // =====================================================================
-    /** @return true if a row was deleted, false if the id did not exist */
+
+    // ---------- DELETE ----------
     public boolean deleteItem(Integer itemId) {
         return executeInTransaction(session -> {
             PantryItem item = session.get(PantryItem.class, itemId);
+
             if (item == null) {
+                LOG.warn("Delete skipped: no pantry item with id={}", itemId);
                 return false;
             }
+
             session.remove(item);
+            LOG.info("Pantry item deleted: id={}", itemId);
             return true;
         });
     }
-    
+
+    // ---------- Helper ----------
     private PantryItem requireItem(org.hibernate.Session session, Integer itemId) {
         PantryItem item = session.get(PantryItem.class, itemId);
         if (item == null) {
+            LOG.warn("No pantry item found with id={}", itemId);
             throw new DataAccessException("No pantry item with id " + itemId);
         }
         return item;

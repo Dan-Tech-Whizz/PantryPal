@@ -5,19 +5,26 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class UserDAO extends BaseDAO {
-    private static final Logger log =LoggerFactory.getLogger(UserDAO.class);
+    private static final Logger log = LoggerFactory.getLogger(UserDAO.class);
 
     // ---------- CREATE ----------
     public Integer createUser(User user) {
-        Integer id = executeInTransaction(session -> {
-            // INSERT User, then its items through cascade.
-            session.persist(user);
-            return user.getId();
-        });
+        try {
+            Integer id = executeInTransaction(session -> {
+                // INSERT User, then its items through cascade.
+                session.persist(user);
+                return user.getId();
+            });
 
-        log.info("User created: id={}, email={}", id, user.getEmail());
-        return id;
+            log.info("User created: id={}, email={}", id, user.getEmail());
+            return id;
+        } catch (DataAccessException ex) {
+            // a failed insert must be logged at ERROR
+            log.error("Failed to create user with email {}", user.getEmail(), ex);
+            throw ex;
+        }
     }
 
     // ---------- READ ----------
@@ -73,6 +80,7 @@ public class UserDAO extends BaseDAO {
             User user = session.get(User.class, userId);
 
             if (user == null) {
+                log.warn("Update settings failed: no user with id {}", userId);
                 throw new DataAccessException("No user with id " + userId);
             }
 
@@ -102,9 +110,9 @@ public class UserDAO extends BaseDAO {
         });
 
         if (deleted) {
-      //      log.info("User deleted: id={}", userId);
+            log.info("User deleted: id={}", userId);
         } else {
-     //       log.warn("Delete skipped: no user with id={}", userId);
+            log.warn("Delete skipped: no user with id={}", userId);
         }
 
         return deleted;

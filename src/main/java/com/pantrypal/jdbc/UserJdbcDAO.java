@@ -15,8 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 public class UserJdbcDAO {
 
-    private static final Logger LOG =
-            LogManager.getLogger(UserJdbcDAO.class);
+    private static final Logger LOG = LogManager.getLogger(UserJdbcDAO.class);
 
     private static final String SELECT =
             "SELECT user_id, name, email, password_hash, "
