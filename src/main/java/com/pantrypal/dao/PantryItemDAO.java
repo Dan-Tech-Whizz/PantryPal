@@ -12,7 +12,7 @@ import java.util.List;
 public class PantryItemDAO extends BaseDAO {
     private static final Logger LOG = LoggerFactory.getLogger(PantryItemDAO.class);
 
-    // ---------- CREATE ----------
+    // CREATE 
     public Integer addItem(Integer userId, Integer ingredientId, PantryItem item) {
         return executeInTransaction(session -> {
             // Validate user exists
@@ -47,7 +47,7 @@ public class PantryItemDAO extends BaseDAO {
         });
     }
 
-    // ---------- READ ----------
+    // READ 
     public List<PantryItem> findByUser(Integer userId) {
         // join fetch to avoid lazy loading issues, order by expiry
         return executeInTransaction(session ->
@@ -72,7 +72,7 @@ public class PantryItemDAO extends BaseDAO {
         );
     }
 
-    // ---------- UPDATE ----------
+    // UPDATE 
     public void updateQuantity(Integer itemId, int quantity) {
         executeInTransaction(session -> {
             PantryItem item = requireItem(session, itemId);
@@ -94,7 +94,7 @@ public class PantryItemDAO extends BaseDAO {
         });
     }
 
-    // ---------- DELETE ----------
+    // DELETE 
     public boolean deleteItem(Integer itemId) {
         return executeInTransaction(session -> {
             PantryItem item = session.get(PantryItem.class, itemId);
@@ -110,7 +110,7 @@ public class PantryItemDAO extends BaseDAO {
         });
     }
 
-    // ---------- Helper ----------
+    // Helper 
     private PantryItem requireItem(org.hibernate.Session session, Integer itemId) {
         PantryItem item = session.get(PantryItem.class, itemId);
         if (item == null) {

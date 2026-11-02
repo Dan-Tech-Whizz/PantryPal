@@ -3,12 +3,9 @@ package com.pantrypal.util;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-/** 
- * Builds ONE SessionFactory for the whole application. 
- * 
- * A SessionFactory is expensive to create and thread-safe, so we create it once. 
- * A Session is cheap and NOT thread-safe, so we open a new one per operation. 
- */ 
+//Builds ONE SessionFactory for the whole application. 
+ /* A SessionFactory is expensive to create and thread-safe, so we create it once. 
+A Session is cheap and NOT thread-safe, so we open a new one per operation.*/ 
 public final class HibernateUtil {
 
     private static final SessionFactory SESSION_FACTORY = buildSessionFactory();

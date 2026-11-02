@@ -38,7 +38,7 @@ class LoggingEventsTest {
         log.close();
     }
 
-    // ---------- Configuration: appenders, layouts, loggers ----------
+    // Configuration: appenders, layouts, loggers 
     @Test
     void consoleAndFileAppendersAreConfigured() {
         Map<String, Appender> appenders
@@ -74,7 +74,7 @@ class LoggingEventsTest {
         assertTrue(LogManager.getLogger("org.hibernate").isWarnEnabled());
     }
 
-    // ---------- Events: information, warning, error, fatal ----------
+    // Events: information, warning, error, fatal 
     @Test
     void infoEventIsRecorded() {
         LOG.info("Pantry opened for user {}", 2);

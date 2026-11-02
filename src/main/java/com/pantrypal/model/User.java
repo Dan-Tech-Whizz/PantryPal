@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A PantryPal account. One User has MANY PantryItems (One-to-Many). */
+/* A PantryPal account. 
+  One User has MANY PantryItems (One-to-Many). */
 @Entity
 @Table(name = "USERS")
 public class User {
@@ -41,7 +42,7 @@ public class User {
         this.email = email;
         this.passwordHash = passwordHash;
     }
-    // ---- Helpers keep BOTH sides of the relationship in sync ----
+    // Helpers to keep BOTH sides of the relationship in sync 
     public void addPantryItem(PantryItem item) {
         pantryItems.add(item);
         item.setUser(this);
@@ -50,7 +51,7 @@ public class User {
         pantryItems.remove(item);
         item.setUser(null);
     }
-    // ---- Getters and setters ----
+    // Getters and setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getName() { return name; }
@@ -66,7 +67,7 @@ public class User {
     public List<PantryItem> getPantryItems() { return pantryItems; }
     public void setPantryItems(List<PantryItem> pantryItems) { this.pantryItems = pantryItems; }
     
-    /** Excludes 'pantryItems' and the password hash on purpose. */
+    //Excludes pantryItems and the password hash on purpose.
     @Override
     public String toString() {
         return "User{id=" + id + ", name='" + name + "', email='" + email + "'}";

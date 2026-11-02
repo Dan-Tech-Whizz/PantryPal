@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/* CRUD tests for the Hibernate (ORM) UserDAO.*/
+//CRUD tests for the Hibernate (ORM) UserDAO.
 @ExtendWith(TestLogger.class)
 class UserOrmDaoTest {
 
@@ -38,7 +38,7 @@ class UserOrmDaoTest {
         created.clear();
     }
 
-    // ---------- CREATE ----------
+    // CREATE 
     @Test
     void createUser_assignsAGeneratedId() {
         try (LogCapture log = new LogCapture()) {
@@ -63,7 +63,7 @@ class UserOrmDaoTest {
         }
     }
 
-    // ---------- READ ----------
+    // READ 
     @Test
     void findById_returnsTheSavedUser() {
         User user = newUser();
@@ -98,7 +98,7 @@ class UserOrmDaoTest {
                 -> id.equals(u.getId())));
     }
 
-    // ---------- UPDATE ----------
+    // UPDATE 
     @Test
     void updateSettings_changesBothFlags() {
         Integer id = save(newUser());
@@ -120,7 +120,7 @@ class UserOrmDaoTest {
         }
     }
 
-    // ---------- DELETE ----------
+    // DELETE 
     @Test
     void deleteUser_removesTheRow() {
         Integer id = save(newUser());

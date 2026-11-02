@@ -21,7 +21,7 @@ public class UserJdbcDAO {
             "SELECT user_id, name, email, password_hash, "
             + "notifications_enabled, allow_purchase_suggestions FROM USERS ";
 
-    // ---------- CREATE ----------
+    // CREATE 
     public int create(User user) {
         String sql =
                 "INSERT INTO USERS (name, email, password_hash, "
@@ -58,7 +58,7 @@ public class UserJdbcDAO {
         }
     }
 
-    // ---------- READ ----------
+    //  READ 
     public Optional<User> findById(int id) {
         try (Connection con = JdbcUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(
@@ -104,7 +104,7 @@ public class UserJdbcDAO {
         }
     }
 
-    // ---------- UPDATE ----------
+    // UPDATE 
     public boolean update(User user) {
         String sql =
                 "UPDATE USERS SET name = ?, email = ?, "
@@ -138,7 +138,7 @@ public class UserJdbcDAO {
         }
     }
 
-    // ---------- DELETE ----------
+    // DELETE 
     public boolean delete(int id) {
         try (Connection con = JdbcUtil.getConnection()) {
             con.setAutoCommit(false);

@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 public class UserDAO extends BaseDAO {
     private static final Logger log = LoggerFactory.getLogger(UserDAO.class);
 
-    // ---------- CREATE ----------
+    // CREATE
     public Integer createUser(User user) {
         try {
             Integer id = executeInTransaction(session -> {
-                // INSERT User, then its items through cascade.
+                // INSERT User, then its items through cascade
                 session.persist(user);
                 return user.getId();
             });
@@ -27,7 +27,7 @@ public class UserDAO extends BaseDAO {
         }
     }
 
-    // ---------- READ ----------
+    // READ
     public Optional<User> findById(Integer id) {
         Optional<User> result = executeInTransaction(session ->
                 session.createQuery(
@@ -70,7 +70,7 @@ public class UserDAO extends BaseDAO {
         return users;
     }
 
-    // ---------- UPDATE ----------
+    // UPDATE 
     public void updateSettings(
             Integer userId,
             boolean notifications,
@@ -95,7 +95,7 @@ public class UserDAO extends BaseDAO {
         );
     }
 
-    // ---------- DELETE ----------
+    // DELETE
     public boolean deleteUser(Integer userId) {
         boolean deleted = executeInTransaction(session -> {
             User user = session.get(User.class, userId);

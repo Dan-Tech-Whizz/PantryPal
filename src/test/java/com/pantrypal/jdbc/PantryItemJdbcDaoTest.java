@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/*CRUD tests for the traditional (JDBC) PantryItemJdbcDAO.*/
+//CRUD tests for the traditional (JDBC) PantryItemJdbcDAO.
 @ExtendWith(TestLogger.class)
 class PantryItemJdbcDaoTest {
 
@@ -48,7 +48,7 @@ class PantryItemJdbcDaoTest {
         return item;
     }
 
-    // ---------- CREATE ----------
+    // CREATE 
     @Test
     void create_assignsAnId() {
         PantryItem item = newItem(userId, LocalDate.of(2026, 10, 12), 2);
@@ -70,7 +70,7 @@ class PantryItemJdbcDaoTest {
         }
     }
 
-    // ---------- READ ----------
+    // READ 
     @Test
     void findById_returnsTheStoredValues() {
         int id = items.create(newItem(userId, LocalDate.of(2026, 10, 12), 2));
@@ -101,7 +101,7 @@ class PantryItemJdbcDaoTest {
                 list.get(0).getExpiryDate());
     }
 
-    // ---------- UPDATE ----------
+    // UPDATE
     @Test
     void updateQuantity_changesTheValue() {
         int id = items.create(newItem(userId, LocalDate.of(2026, 10, 12),
@@ -127,7 +127,7 @@ class PantryItemJdbcDaoTest {
             assertTrue(log.has(Level.WARN, "nothing changed"));
         }
     }
-// ---------- DELETE ----------
+// DELETE 
 
     @Test
     void delete_removesTheRow() {

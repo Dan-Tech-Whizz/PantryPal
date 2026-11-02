@@ -10,7 +10,7 @@ import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Property;
 
-/** Records log events in memory so a unit test can assert on them. */
+// Records log events in memory so a unit test can assert on them. 
 public final class LogCapture implements AutoCloseable {
 private final List<LogEvent> events = new CopyOnWriteArrayList<>();
 private final LoggerContext context = LoggerContext.getContext(false);
@@ -23,24 +23,24 @@ null, null, true, Property.EMPTY_ARRAY) {
 @Override
 public void append(LogEvent event) {
 events.add(event.toImmutable());    
-// copy: Log4j reuses event objects
+// Log4j reuses event objects
 }
   };
         appender.start();
         loggerConfig.addAppender(appender, Level.ALL, null);
         context.updateLoggers();
     }
-    /** True if at least one event of this level was logged. */
+    // True if at least one event of this level was logged. 
     public boolean has(Level level) {
         return events.stream().anyMatch(e -> e.getLevel().equals(level));
     }
-    /** True if an event of this level whose message contains the text was 
-logged. */
+    /* True if an event of this level whose message contains 
+     the text was logged. */
     public boolean has(Level level, String text) {
         return events.stream().anyMatch(e -> e.getLevel().equals(level)
                 && e.getMessage().getFormattedMessage().contains(text));
     }
-    /** The most recent event of this level. */
+    // The most recent event of this level. 
     public Optional<LogEvent> last(Level level) {
         return events.stream().filter(e -> 
 e.getLevel().equals(level)).reduce((first, second) -> second);

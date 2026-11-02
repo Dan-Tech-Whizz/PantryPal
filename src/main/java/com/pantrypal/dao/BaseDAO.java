@@ -6,11 +6,10 @@ import java.util.function.Function;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-/** Every public DAO method runs in its own Session and its own transaction. 
-*/
+// Every public DAO method runs in its own Session and its own transaction.
 public abstract class BaseDAO {
-    /** Runs work inside a transaction and returns a result. Rolls back on 
-    any failure. */
+    /* Runs work inside a transaction and returns a result. 
+    Rolls back on any failure. */
     protected <T> T executeInTransaction(Function<Session, T> work) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = null;
